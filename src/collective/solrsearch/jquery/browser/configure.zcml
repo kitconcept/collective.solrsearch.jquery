@@ -17,4 +17,12 @@
       directory="static"
       />
 
+  <browser:page
+      name="search"
+      for="*"
+      template="search.pt"
+      layer="collective.solrsearch.jquery.interfaces.ICollectiveSolrsearchJqueryLayer"
+      permission="zope2.Public"
+      />
+
 </configure>

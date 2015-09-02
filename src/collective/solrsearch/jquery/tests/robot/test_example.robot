@@ -36,31 +36,36 @@ Test Teardown  Close all browsers
 
 Scenario: As a member I want to be able to log into the website
   [Documentation]  Example of a BDD-style (Behavior-driven development) test.
-  Given a login form
-   When I enter valid credentials
-   Then I am logged in
+  Given the search form
+    and a document with the title 'Welcome to Plone'
+   When I search for 'Plone'
+   Then the search results contain 'Welcome to Plone'
 
 
 *** Keywords *****************************************************************
 
 # --- Given ------------------------------------------------------------------
 
-a login form
-  Go To  ${PLONE_URL}/login_form
-  Wait until page contains  Login Name
-  Wait until page contains  Password
+the search form
+  Go To  ${PLONE_URL}/search
+
+a document with the title '${title}'
+  Enable autologin as  Contributor
+  ${uid}=  Create content  type=Document  title=${title}
+#  Fire transition  ${uid}  publish
+#  Disable autologin
 
 
 # --- WHEN -------------------------------------------------------------------
 
-I enter valid credentials
-  Input Text  __ac_name  admin
-  Input Text  __ac_password  secret
-  Click Button  Log in
+I search for '${term}'
+  Input Text  SearchableText  ${term}
+  Click Button  Search
 
 
 # --- THEN -------------------------------------------------------------------
 
-I am logged in
-  Wait until page contains  You are now logged in
-  Page should contain  You are now logged in
+the search results contain '${title}'
+  Wait until page contains  Search results
+  Page should contain  ${title}
+  Debug

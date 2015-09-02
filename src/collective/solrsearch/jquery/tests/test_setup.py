@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
-"""Setup tests for this package."""
 from collective.solrsearch.jquery.testing import COLLECTIVE_SOLRSEARCH_JQUERY_INTEGRATION_TESTING  # noqa
 from plone import api
+from zope.component import getMultiAdapter
 
-import unittest2 as unittest
+import unittest
 
 
 class TestSetup(unittest.TestCase):
@@ -14,17 +14,29 @@ class TestSetup(unittest.TestCase):
     def setUp(self):
         """Custom shared utility setup for tests."""
         self.portal = self.layer['portal']
+        self.request = self.layer['request']
         self.installer = api.portal.get_tool('portal_quickinstaller')
 
     def test_product_installed(self):
-        """Test if collective.solrsearch.jquery is installed with portal_quickinstaller."""
-        self.assertTrue(self.installer.isProductInstalled('collective.solrsearch.jquery'))
+        self.assertTrue(
+            self.installer.isProductInstalled('collective.solrsearch.jquery')
+        )
+
+    def test_collective_solr_installed(self):
+        self.assertTrue(
+            self.installer.isProductInstalled('collective.solr'))
 
     def test_browserlayer(self):
-        """Test that ICollectiveSolrsearchJqueryLayer is registered."""
-        from collective.solrsearch.jquery.interfaces import ICollectiveSolrsearchJqueryLayer
+        from collective.solrsearch.jquery.interfaces import ICollectiveSolrsearchJqueryLayer  # noqa
         from plone.browserlayer import utils
-        self.assertIn(ICollectiveSolrsearchJqueryLayer, utils.registered_layers())
+        self.assertTrue(
+            ICollectiveSolrsearchJqueryLayer in utils.registered_layers()
+        )
+
+    def test_search_view_overridden(self):
+        view = getMultiAdapter((self.portal, self.request), name="search")
+        view = view.__of__(self.portal)
+        self.assertTrue('typeahead.js' in view())
 
 
 class TestUninstall(unittest.TestCase):
@@ -37,5 +49,6 @@ class TestUninstall(unittest.TestCase):
         self.installer.uninstallProducts(['collective.solrsearch.jquery'])
 
     def test_product_uninstalled(self):
-        """Test if collective.solrsearch.jquery is cleanly uninstalled."""
-        self.assertFalse(self.installer.isProductInstalled('collective.solrsearch.jquery'))
+        self.assertFalse(
+            self.installer.isProductInstalled('collective.solrsearch.jquery')
+        )

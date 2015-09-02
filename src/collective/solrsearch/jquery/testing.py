@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
+from collective.solr.testing import COLLECTIVE_SOLR_FIXTURE
 from plone.app.robotframework.testing import REMOTE_LIBRARY_BUNDLE_FIXTURE
 from plone.app.testing import applyProfile
 from plone.app.testing import FunctionalTesting
 from plone.app.testing import IntegrationTesting
-from plone.app.testing import PLONE_FIXTURE
 from plone.app.testing import PloneSandboxLayer
 from plone.testing import z2
 
@@ -12,7 +12,7 @@ import collective.solrsearch.jquery
 
 class CollectiveSolrsearchJqueryLayer(PloneSandboxLayer):
 
-    defaultBases = (PLONE_FIXTURE,)
+    defaultBases = (COLLECTIVE_SOLR_FIXTURE,)
 
     def setUpZope(self, app, configurationContext):
         self.loadZCML(package=collective.solrsearch.jquery)
